@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mājasdarbu Plānotājs</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<div class="phone-shell">
+  <div class="phone-notch"></div>
+
+  <!-- EKRĀNS 1: SARAKSTS -->
+  <div class="screen active" id="screen-list">
+    <div class="screen-header">
+      <span class="screen-title">MĀJASDARBU SARAKSTS</span>
+      <button class="icon-btn" onclick="openProgress()">☰</button>
+    </div>
+    <div class="filter-bar">
+      <select id="priority-filter" class="select-box" onchange="onPriorityChange(this.value)">
+        <option value="visi">Visi</option>
+        <option value="augsta">Augsta prioritāte</option>
+        <option value="videja">Vidēja prioritāte</option>
+        <option value="zema">Zema prioritāte</option>
+      </select>
+      <button class="btn-manage" onclick="showScreen('screen-filters')">Pārvaldīt uzdevumus</button>
+    </div>
+    <div class="task-list" id="task-list"></div>
+    <div class="bottom-actions">
+      <button class="fab fab-add" onclick="openNew()">＋</button>
+      <button class="fab fab-delete" onclick="deleteSelected()">🗑</button>
+      <button class="fab fab-done" onclick="markDone()">✔</button>
+      <button class="fab fab-back" onclick="clearSelection()">←</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-filters">
+    <div class="screen-header plain">
+      <span class="screen-title">FILTRI</span>
+    </div>
+    <div class="filter-list">
+      <div class="filter-item active-filter" data-filter="visi"     onclick="applyFilter(this)">Visi</div>
+      <div class="filter-item" data-filter="nepabeigtie"            onclick="applyFilter(this)">Nepabeigtie</div>
+      <div class="filter-item" data-filter="pabeigtie"              onclick="applyFilter(this)">Pabeigtie</div>
+      <div class="filter-item" data-filter="augsta"                 onclick="applyFilter(this)">Augsta prioritāte</div>
+      <div class="filter-item" data-filter="videja"                 onclick="applyFilter(this)">Vidēja prioritāte</div>
+      <div class="filter-item" data-filter="zema"                   onclick="applyFilter(this)">Zema prioritāte</div>
+    </div>
+    <div class="bottom-actions single">
+      <button class="fab fab-back" onclick="showScreen('screen-list'); renderTasks()">←</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-new">
+    <div class="screen-header plain">
+      <span class="screen-title">JAUNS MĀJASDARBS</span>
+    </div>
+    <div class="form-body">
+      <label class="form-label">Nosaukums</label>
+      <input type="text" id="new-title" class="form-input" placeholder="Nosaukums" />
+
+      <label class="form-label">Sākuma datums un laiks</label>
+      <div class="datetime-row">
+        <input type="date" id="new-start-date" class="form-input half" />
+        <input type="time" id="new-start-time" class="form-input half" />
+      </div>
+
+      <label class="form-label">Beigu datums un laiks</label>
+      <div class="datetime-row">
+        <input type="date" id="new-end-date" class="form-input half" />
+        <input type="time" id="new-end-time" class="form-input half" />
+      </div>
+
+      <label class="form-label">Prioritāte</label>
+      <select id="new-priority" class="form-input">
+        <option value="videja">Vidēja</option>
+        <option value="augsta">Augsta</option>
+        <option value="zema">Zema</option>
+      </select>
+
+      <label class="form-label">Piezīmes (pēc izvēles)</label>
+      <textarea id="new-notes" class="form-input form-textarea" placeholder="Apraksts"></textarea>
+
+      <div class="form-actions">
+        <button class="btn-confirm" onclick="confirmNew()">Apstiprināt</button>
+        <button class="btn-cancel"  onclick="showScreen('screen-list')">Atcelt</button>
+        <button class="fab fab-back" onclick="showScreen('screen-list')">←</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-edit">
+    <div class="screen-header plain">
+      <span class="screen-title">REDIĢĒT MĀJASDARBU</span>
+    </div>
+    <div class="form-body">
+      <label class="form-label">Nosaukums</label>
+      <input type="text" id="edit-title" class="form-input" />
+
+      <label class="form-label">Sākuma datums un laiks</label>
+      <div class="datetime-row">
+        <input type="date" id="edit-start-date" class="form-input half" />
+        <input type="time" id="edit-start-time" class="form-input half" />
+      </div>
+
+      <label class="form-label">Beigu datums un laiks</label>
+      <div class="datetime-row">
+        <input type="date" id="edit-end-date" class="form-input half" />
+        <input type="time" id="edit-end-time" class="form-input half" />
+      </div>
+
+      <label class="form-label">Prioritāte</label>
+      <select id="edit-priority" class="form-input">
+        <option value="videja">Vidēja</option>
+        <option value="augsta">Augsta</option>
+        <option value="zema">Zema</option>
+      </select>
+
+      <label class="form-label">Piezīmes (pēc izvēles)</label>
+      <textarea id="edit-notes" class="form-input form-textarea"></textarea>
+
+      <div class="form-actions">
+        <button class="btn-confirm" onclick="confirmEdit()">Apstiprināt</button>
+        <button class="btn-cancel"  onclick="showScreen('screen-list')">Atcelt</button>
+        <button class="fab fab-back" onclick="showScreen('screen-list')">←</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-progress">
+    <div class="screen-header plain">
+      <span class="screen-title">PROGRESS</span>
+    </div>
+    <div class="progress-body">
+      <p class="progress-section-title">Dienas progress</p>
+      <div class="donut-wrapper">
+        <svg class="donut" viewBox="0 0 120 120">
+          <circle class="donut-bg" cx="60" cy="60" r="48" />
+          <circle class="donut-fill" id="donut-day" cx="60" cy="60" r="48"
+            stroke-dasharray="0 301.6" stroke-dashoffset="75.4" />
+        </svg>
+        <div class="donut-label" id="donut-day-label">0%</div>
+      </div>
+      <p class="progress-section-title">Nedēļas progress</p>
+      <div class="bar-chart" id="bar-chart"></div>
+      <div class="bar-days">
+        <span>P</span><span>O</span><span>T</span><span>T</span><span>P</span><span>S</span><span>Sv</span>
+      </div>
+    </div>
+    <div class="bottom-actions single">
+      <button class="fab fab-back" onclick="showScreen('screen-list')">←</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
